@@ -7,8 +7,8 @@ Imports:
   doParallel,
   foreach
 Authors@R: c(
-  person("Lauren", "Balmert", email = "lauren.balmert@northwestern.edu", role = c("aut", "cre"),
-  person("Denise","Scholtens",role=c("aut"))
+  person("Lauren", "Balmert", email = "lauren.balmert@northwestern.edu", role = c("aut", "cre")),
+  person("Denise","Scholtens",role=c("aut")))
 Encoding: UTF-8
 RoxygenNote: 7.1.1
 
