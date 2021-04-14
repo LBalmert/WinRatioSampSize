@@ -11,7 +11,8 @@ WinRatio_sampsize(
   p,
   n.iter = 500,
   seed = 1000,
-  boot = 500
+  boot = 500,
+  print.iter = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ WinRatio_sampsize(
 \item{seed}{The seed for random number generation}
 
 \item{boot}{The number of bootstrap samples within each simulation}
+
+\item{print.iter}{If TRUE, each simulation number will be printed after completion}
 }
 \value{
 A list with components including the median, 25th percentile, 75th percentile, mean, and standard deviation of Win Ratios across simulations
