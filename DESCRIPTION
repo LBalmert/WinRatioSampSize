@@ -2,7 +2,7 @@ Package: WinRatioSampSize
 Title: Win Ratio Sample Size Estimation 
 Description: A simulation-based sample size calculation approach, relying on the relationship between the win ratio and the rank distribution
 Version: 1.0.0
-Imports: 
+Depends: 
   BiasedUrn,
   doParallel,
   foreach
