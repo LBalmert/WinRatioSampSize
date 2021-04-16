@@ -4,7 +4,8 @@
 #' @param n_arm_1 The sample size in arm 1 
 #' @param n_arm_2 The sample size in arm 2 
 #' @param alpha The two-sided type I error rate
-#' @param p The probability of success in arm 1
+#' @param WinRatio The specified Win Ratio for ratio of Arm 1 wins to Arm 1 losses, either p or Win Ratio should be specified
+#' @param p The probability of success in arm 1, either p or Win Ratio should be specified
 #' @param n.iter The number of simulations 
 #' @param seed The seed for random number generation
 #' @param boot The number of bootstrap samples within each simulation 
@@ -14,7 +15,34 @@
 #' @examples sim_example<-WinRatio_sampsize(n_arm_1=10,n_arm_2=10,alpha=0.05,p=0.6,n.iter=100,seed=1234,boot=100)
 #' @export
 
-WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, p, n.iter=500, seed=1000, boot=500, print.iter=FALSE){
+WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, WinRatio=NULL, p=NULL, n.iter=500, seed=1000, boot=500, print.iter=FALSE){
+  
+  #Warnings 
+  if (!is.null(alpha) && !is.numeric(alpha) || any(alpha < 0 | alpha > 1)) 
+    stop("'alpha' must be numeric and in [0, 1]")
+  
+  if (!is.null(n_arm_1) && !is.numeric(n_arm_1) || any(n_arm_1 <= 0)) 
+    stop("'n_arm_1' must be numeric and > 0")
+  
+  if (!is.null(n_arm_2) && !is.numeric(n_arm_2) || any(n_arm_2 <= 0)) 
+    stop("'n_arm_2' must be numeric and > 0")
+  
+  if (!is.null(WinRatio) && !is.numeric(WinRatio) || any(WinRatio <= 0)) 
+    stop("'WinRatio' must be numeric and > 0")
+  
+  if (!is.null(p) && !is.numeric(p) || any(p <= 0 | p >= 1)) 
+    stop("'p' must be numeric and in [0, 1]")
+  
+  if (is.null(p) & is.null(WinRatio))
+    stop("either 'p' or 'WinRatio' needs to be specified")
+  
+  if(!is.null(p) & !is.null(WinRatio) & isTRUE(p!=(WinRatio/(WinRatio+1))))
+    stop("'p' and 'WinRatio' are both specified but p not equal to WinRatio/(WinRatio+1)")
+  
+  #If Win Ratio not specified, use "p"
+  if (is.null(WinRatio)){p<-p} 
+  #If Win Ratio specified, convert to "p"
+  if (is.null(p)){p<-WinRatio/(WinRatio+1)}
   
   no_cores <- detectCores() - 1
   cl <- makeCluster(no_cores)
@@ -42,6 +70,7 @@ WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, p, n.iter=500, seed=
     n_upper_rank_1<-n_upper_rank+1          
   }
   
+
   
   for (j in 1:n.iter){
     set.seed(j+seed)

@@ -8,7 +8,8 @@ WinRatio_sampsize(
   n_arm_1,
   n_arm_2,
   alpha = 0.05,
-  p,
+  WinRatio = NULL,
+  p = NULL,
   n.iter = 500,
   seed = 1000,
   boot = 500,
@@ -22,7 +23,9 @@ WinRatio_sampsize(
 
 \item{alpha}{The two-sided type I error rate}
 
-\item{p}{The probability of success in arm 1}
+\item{WinRatio}{The specified Win Ratio for ratio of Arm 1 wins to Arm 1 losses, either p or Win Ratio should be specified}
+
+\item{p}{The probability of success in arm 1, either p or Win Ratio should be specified}
 
 \item{n.iter}{The number of simulations}
 
