@@ -125,7 +125,7 @@ WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, WinRatio=NULL, p=NUL
   closeAllConnections()
   
   if(quantile(win_ratio,1.0, na.rm=TRUE)=="Inf")
-    stop("Caution: some iterations producing infinity estimates for win ratio, consider larger sample size or less extreme win ratio")
+    warning("Some iterations producing infinity estimates for win ratio, consider larger sample size or less extreme win ratio")
   
   Power<-length(power_percentile[power_percentile==1])/length(power_percentile)
  
