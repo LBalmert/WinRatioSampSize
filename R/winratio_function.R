@@ -111,7 +111,7 @@ WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, WinRatio=NULL, p=NUL
       sum(sapply(sample_arm1,function(x){sum(x < sample_arm2)}))/sum(sapply(sample_arm1,function(x){sum(x > sample_arm2)}))
     }
     
-    if(quantile(win_ratio,1.0)=="Inf")
+    if(quantile(win_ratio,1.0, na.rm=TRUE)=="Inf")
       stop("Caution: some iterations producing infinity estimates for win ratio, consider larger sample size or less extreme win ratio")
     
     #bootstrap CI based on percentiles (a/2, 1-a/2)
