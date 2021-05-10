@@ -61,15 +61,6 @@ WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, WinRatio=NULL, p=NUL
   n_total<-n_arm_1+n_arm_2
   odd<-ifelse(n_total%%2 == 1,1,0)
   
-  if (odd==0){
-    n_upper_rank<-n_total*0.5
-    n_upper_rank_1<-n_upper_rank+1       
-  }
-  if (odd==1){ 
-    n_upper_rank<-floor(n_total*0.5) + rbinom(1,1,0.5)
-    n_upper_rank_1<-n_upper_rank+1          
-  }
-  
 
   
   for (j in 1:n.iter){
@@ -93,6 +84,16 @@ WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, WinRatio=NULL, p=NUL
       n_hyper[j]<-rWNCHypergeo(1,0.5*n_total,0.5*n_total,n_arm_1,odds) #non-central
     }
     
+    if (odd==0){
+      n_upper_rank<-n_total*0.5
+      n_upper_rank_1<-n_upper_rank+1       
+    }
+    if (odd==1){
+      set.seed(seed+j+1)
+      n_upper_rank<-floor(n_total*0.5) + rbinom(1,1,0.5)
+      n_upper_rank_1<-n_upper_rank+1          
+    }
+    
     ranks<-c(1:n_total) #all possible ranks - assuming no ties
     arm_1_ranks<-c(sample(x=c(1:n_upper_rank),size=n_hyper[j],replace=F),sample(x=c(n_upper_rank_1:n_total),size=n_arm_1-n_hyper[j],replace=F))
     #control ranks are all those not included in arm 1 
@@ -102,17 +103,16 @@ WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, WinRatio=NULL, p=NUL
     win_ratio[j]<-sum(sapply(arm_1_ranks,function(x){sum(x < arm_2_ranks)}))/sum(sapply(arm_1_ranks,function(x){sum(x > arm_2_ranks)}))
     
     #Bootstrap resample
-    full<- c(arm_1_ranks,arm_2_ranks)
-    names(full)<-c(rep(1,n_arm_1),rep(2,n_arm_2))
-    
     #estimate of win ratio for each bootstrap sample within one iteration
     winratio_est<-foreach(i=1:boot, .combine=c) %dopar% {
       set.seed(10000*j + i + seed)
-      sample<-sample(full,replace=T,size=n_total)
-      sample_arm1<-sample[names(sample)==1]
-      sample_arm2<-sample[names(sample)==2]
-     sum(sapply(sample_arm1,function(x){sum(x < sample_arm2)}))/sum(sapply(sample_arm1,function(x){sum(x > sample_arm2)}))
+      sample_treat<-sample(treat_ranks,replace=T,size=n_arm_1)
+      sample_control<-sample(control_ranks,replace=T,size=n_arm_2)
+      sum(sapply(sample_treat,function(x){sum(x < sample_control)}))/sum(sapply(sample_treat,function(x){sum(x > sample_control)}))
     }
+    
+    if(quantile(win_ratio,1.0)=="Inf")
+      stop("Caution: some iterations producing infinity estimates for Win Ratio")
     
     #bootstrap CI based on percentiles (a/2, 1-a/2)
     lower_limit<-alpha/2
