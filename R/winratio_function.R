@@ -106,13 +106,13 @@ WinRatio_sampsize <- function(n_arm_1, n_arm_2, alpha=0.05, WinRatio=NULL, p=NUL
     #estimate of win ratio for each bootstrap sample within one iteration
     winratio_est<-foreach(i=1:boot, .combine=c) %dopar% {
       set.seed(10000*j + i + seed)
-      sample_treat<-sample(treat_ranks,replace=T,size=n_arm_1)
-      sample_control<-sample(control_ranks,replace=T,size=n_arm_2)
-      sum(sapply(sample_treat,function(x){sum(x < sample_control)}))/sum(sapply(sample_treat,function(x){sum(x > sample_control)}))
+      sample_arm1<-sample(arm_1_ranks,replace=T,size=n_arm_1)
+      sample_arm2<-sample(arm_2_ranks,replace=T,size=n_arm_2)
+      sum(sapply(sample_arm1,function(x){sum(x < sample_arm2)}))/sum(sapply(sample_arm1,function(x){sum(x > sample_arm2)}))
     }
     
     if(quantile(win_ratio,1.0)=="Inf")
-      stop("Caution: some iterations producing infinity estimates for Win Ratio")
+      stop("Caution: some iterations producing infinity estimates for win ratio, consider larger sample size or less extreme win ratio")
     
     #bootstrap CI based on percentiles (a/2, 1-a/2)
     lower_limit<-alpha/2
